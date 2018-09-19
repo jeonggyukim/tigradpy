@@ -1,3 +1,6 @@
+"""
+Work in progress. This file should be updated.
+"""
 
 import numpy as np
 import astropy.units as au
@@ -14,9 +17,15 @@ def f_tau(tau_perp):
     
     Ref: Ostriker et al. (2010)
 
-    Parameters:
+    Parameters
+    ----------
        tau_perp: float
           dust optical depth of emitting slab in the vertical direction
+    
+    Returns
+    -------
+       f_tau: float
+          correction factor
     """
     
     from scipy.special import expn

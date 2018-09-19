@@ -1,3 +1,6 @@
+"""
+Various utility routines for making plots look prettier
+"""
 
 import numpy as np
 from math import atan2,degrees

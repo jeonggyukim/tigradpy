@@ -12,14 +12,17 @@ import xarray as xr
 def read_hst(filename, force_override=False, verbose=False):
     """ Function to read athena history file and pickle
     
-    Parameters:
+    Parameters
+    ----------
        filename : string
            Name of the file to open, including extension
-       force_override: bool
+       force_override : bool
            Flag to force read of hst file even when pickle exists
 
-    Returns:
+    Returns
+    -------
        hst : pandas dataframe
+           Time series data 
     """
 
     skiprows = 3
@@ -34,7 +37,7 @@ def read_hst(filename, force_override=False, verbose=False):
         if verbose:
             print('[read_hst]: pickle does not exist or hst file updated.' + \
                       ' Reading {0:s}'.format(filename))
-        vlist = get_hst_var(filename)
+        vlist = _get_hst_var(filename)
 
         # c engine does not support regex separators
         hst = pd.read_table(filename, names=vlist, skiprows=skiprows,
@@ -44,17 +47,18 @@ def read_hst(filename, force_override=False, verbose=False):
     return hst
 
       
-def get_hst_var(filename):
+def _get_hst_var(filename):
     """ Read variable names from history file
 
-    Parameters:
+    Parameters
+    ----------
        filename : string
            Name of the file to open, including extension
 
-    Returns:
+    Returns
+    -------
        vlist : list
-           list of variables
-
+           List of variables
     """
 
     with open(filename, 'r') as f:
@@ -72,10 +76,11 @@ def get_hst_var(filename):
     return vlist[1:-1]
 
 def read_zprof_all(dirname, problem_id, phase='whole', force_override=False):
-    """Read all zprof files and make a DataArray object and write to a NetCDF
+    """ Read all zprof files and make a DataArray object and write to a NetCDF
     file
 
-    Parameters:
+    Parameters
+    ----------
        dirname : string
            Name of the directory where zprof files are located
        problem_id: string
@@ -83,11 +88,12 @@ def read_zprof_all(dirname, problem_id, phase='whole', force_override=False):
        phase: string
            whole, phase1, ..., phase5 (cold, intermediate, warm, hot1, hot2)
   
-    Returns:
+    Returns
+    -------
        da: xarray dataarray
     """
 
-    ### Find all files with "/dirname/problem_id.xxxx.phase.zprof"    
+    # Find all files with "/dirname/problem_id.xxxx.phase.zprof"    
     fname_base = '{0:s}.????.{1:s}.zprof'.format(problem_id, phase)
     fnames = glob.glob(os.path.join(dirname, fname_base))
 
@@ -136,13 +142,15 @@ def read_zprof(filename, force_override=False, verbose=False):
     """
     Function to read one zprof file and pickle
     
-    Parameters:
+    Parameters
+    ----------
        filename : string
            Name of the file to open, including extension
        force_override: bool
            Flag to force read of zprof file even when pickle exists
 
-    Returns:
+    Returns
+    -------
        zp : pandas dataframe
     """
 
