@@ -71,8 +71,9 @@ def add_fields(ds, IXN=3,
                  display_name=r'$n_{\rm HI}$')
 
     # electron number density: assume ne = (1 - xn + y)*nH
+    @static_vars(y=y)
     def _nelec(field, data):
-        return (1.0 - data[("athena",field_xn)])*\
+        return (1.0 - data[("athena",field_xn)] + y)*\
                 data[("athena","nH")]
     ds.add_field(("athena","nelec"), sampling_type="cell",
                  function=_nelec, units="cm**-3", take_log=True,
