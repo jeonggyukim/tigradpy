@@ -1,9 +1,16 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+import os,sys
 import yt
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import AxesGrid
 
-def plt_multipanel(ds, kind='slice', axis='z',
-                   fields=['nH', 'xn', 'G0prime0', 'G0prime1']):
+sys.path.insert(0, '../../')
+import tigradpy as tp
+
+def yt_multipanel(ds, kind='slice', axis='z',
+                  fields=['nH', 'xn', 'G0prime0', 'G0prime1']):
     """
     Make 2x2 multi-panel plot using yt
     Based on
@@ -38,6 +45,17 @@ def plt_multipanel(ds, kind='slice', axis='z',
                     cbar_location="right", cbar_mode="each",
                     cbar_size="4%", cbar_pad="2%")
 
+
+    p.set_zlim('nH', 1e-4, 1e2)
+    p.set_zlim('xn', 0.0, 1.0)
+    p.set_zlim('G0prime0', 1e-4, 1e2)
+    p.set_zlim('G0prime1', 1e-2, 1e2)
+    
+    p.set_cmap(field=('athena','nH'), cmap='Spectral_r')
+    p.set_cmap(field=('athena','xn'), cmap='viridis')
+    p.set_cmap(field='G0prime0', cmap='plasma')
+    p.set_cmap(field='G0prime1', cmap='plasma')
+
     for i, field in enumerate(fields):
         plot = p.plots[field]
         plot.figure = fig
@@ -46,15 +64,6 @@ def plt_multipanel(ds, kind='slice', axis='z',
 
     p._setup_plots()
     
-    # Set clim of G0prime_EUV equal to that of G0prime_FUV
-    if ('gas','G0prime0') in p.plots.keys() and \
-       ('gas','G0prime1') in p.plots.keys():
-        clim = p.plots[('gas','G0prime1')].image.get_clim()
-        p.plots[('gas','G0prime0')].image.set_clim(clim)
-    
-    if ('athena','xn') in p.plots.keys():
-        p.plots[('athena','xn')].image.set_clim(1e-8,1.0)
-
     for i, field in enumerate(fields):
         grid[i].axes.get_xaxis().get_major_formatter().set_scientific(False)
         grid[i].axes.get_yaxis().get_major_formatter().set_scientific(False)

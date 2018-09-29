@@ -28,8 +28,8 @@ def read_zprof_all(dirname, problem_id, phase='whole', force_override=False):
 
     # Find all files with "/dirname/problem_id.xxxx.phase.zprof"    
     fname_base = '{0:s}.????.{1:s}.zprof'.format(problem_id, phase)
-    fnames = glob.glob(os.path.join(dirname, fname_base))
-
+    fnames = sorted(glob.glob(os.path.join(dirname, fname_base)))
+    
     fnetcdf = '{0:s}.{1:s}.zprof.nc'.format(problem_id, phase)
     fnetcdf = os.path.join(dirname, fnetcdf)
 
