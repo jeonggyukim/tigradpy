@@ -66,9 +66,12 @@ def read_zprof_all(dirname, problem_id, phase='whole', force_override=False):
     # Somehow overwriting using mode='w' doesn't work..
     if os.path.exists(fnetcdf):
         os.remove(fnetcdf)
-        
-    da.to_netcdf(fnetcdf, mode='w')
 
+    try:
+        da.to_netcdf(fnetcdf, mode='w')
+    except IOError:
+        pass
+    
     return da
 
 def read_zprof(filename, force_override=False, verbose=False):
@@ -114,6 +117,9 @@ def read_zprof(filename, force_override=False, verbose=False):
         # c engine does not support regex separators
         zp = pd.read_table(filename, names=vlist, skiprows=skiprows,
                            comment='#', sep=',', engine='python')
-        zp.to_pickle(fpkl)
-
+        try:
+            zp.to_pickle(fpkl)
+        except IOError:
+            pass
+        
     return zp

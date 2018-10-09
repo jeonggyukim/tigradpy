@@ -42,7 +42,10 @@ def read_hst(filename, force_override=False, verbose=False):
         # c engine does not support regex separators
         hst = pd.read_table(filename, names=vlist, skiprows=skiprows,
                             comment='#', sep='\s*', engine='python')
-        hst.to_pickle(fpkl)
+        try:
+            hst.to_pickle(fpkl)
+        except IOError:
+            pass
 
     return hst
 

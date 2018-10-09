@@ -37,14 +37,24 @@ def yt_multipanel(ds, kind='slice', axis='z',
         p = yt.SlicePlot(ds, axis, fields)
     elif kind == 'projection':
         p = yt.ProjectionPlot(ds, axis, fields, weight_field='cell_volume')
-        
-    fig = plt.figure()
-    grid = AxesGrid(fig, (0.075,0.075,0.85,0.85),
-                    nrows_ncols=(2,2), axes_pad=(1.2,0.1),
-                    label_mode="1", share_all=True,
-                    cbar_location="right", cbar_mode="each",
-                    cbar_size="4%", cbar_pad="2%")
 
+    nf = len(fields)
+        
+    if axis == 'x' or axis == 'y':
+        nrows_ncols = (1,nf)
+        figsize = (12,12)
+        cbar_location = "right"
+    else:
+        nrows_ncols = (2,2)
+        figsize = (12,12)
+        cbar_location = "right"
+    
+    fig = plt.figure(figsize=figsize)
+    grid = AxesGrid(fig, (0.075,0.075,0.85,0.85),
+                    nrows_ncols=nrows_ncols, axes_pad=(1.2,0.1),
+                    label_mode="1", share_all=True,
+                    cbar_location=cbar_location, cbar_mode="each",
+                    cbar_size="4%", cbar_pad="2%")
 
     p.set_zlim('nH', 1e-4, 1e2)
     p.set_zlim('xn', 0.0, 1.0)
@@ -63,6 +73,7 @@ def yt_multipanel(ds, kind='slice', axis='z',
         plot.cax = grid.cbar_axes[i]
 
     p._setup_plots()
+    fig.set_size_inches(figsize)
     
     for i, field in enumerate(fields):
         grid[i].axes.get_xaxis().get_major_formatter().set_scientific(False)

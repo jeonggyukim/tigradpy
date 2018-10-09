@@ -16,9 +16,7 @@ class mass_to_lum(object):
         Parameters
         ----------
         model: string
-           Name of population synthesis model or stellar evolutionary track.
-           'SB99': Starburst99 (IMF mean). This option should be used for 
-                   coeval populations of stars that well-samples the IMF.
+           Name of stellar evolutionary track.
            'Padova': Power-law approximation for stellar properties
                      using Padova track (Bruzual & Charlot 2003).
                      Data from Table 1 in Parravano et al. (2003).
@@ -26,12 +24,6 @@ class mass_to_lum(object):
         """
         
         self.model = model
-
-    def calc_LFUV(self, mass, age=0.0):
-        return mass*self.MtoL_FUV(age)
-
-    def calc_Qi(self, mass, age=0.0):
-        return mass*self.QtoM_EUV(age)
     
     @property
     def model(self):
@@ -40,16 +32,16 @@ class mass_to_lum(object):
     @model.setter
     def model(self, model):
         self._model = model
-        if model == 'SB99':
-            # SB99 specific FUV luminosity Psi = L_FUV/M_star as a function of age
-            self.MtoL_FUV, self.QtoM_EUV = self._get_MtoL_SB99()
-        elif model == 'Padova':
-            self.agemax_MS, self.LFUV, self.LH2, self.Qi = self._get_MtoL_Padova()
-            self.age_to_mass = self._get_age_to_mass()
+        self.LtoM_FUV_SB99, self.QtoM_EUV_SB99 = self._get_MtoL_SB99()
+        
+        if model == 'Padova':
+            self.calc_tMS, self.calc_LFUV, \
+                self.calc_LH2, self.calc_Qi = self._get_MtoL_Padova()
+            self.calc_ZAMS_mass = self._get_age_to_mass()
 
     def _get_age_to_mass(self):
         mass_range = np.array([1.2, 3.0, 6.0, 9.0, 12.0, 120.0])
-        age_range = np.flip(self.agemax_MS(mass_range))
+        age_range = np.flip(self.calc_tMS(mass_range))
 
         def age_to_mass(age):
             # Isn't there more elegant way of doing this??
@@ -80,7 +72,7 @@ class mass_to_lum(object):
         """
         Initialize power-law functions for model 'Padova'
         
-        agemax_MS: main sequence lifetime [Myr],
+        tMS: main sequence lifetime [Myr],
         LFUV: mean luminosities in the FUV band (912 - 2070A) [Lsun],
         LH2: mean luminosities in the H2 band (912 - 1100A) [Lsun]
         Qi: ionizing photon luminosity in the EUV band (< 912A).
@@ -105,7 +97,7 @@ class mass_to_lum(object):
                 return y
             return wrapper
 
-        agemax_MS = decorator(pp)
+        tMS = decorator(pp)
         
         # FUV luminosity
         mass_range = np.array([1.8, 2.0, 2.5, 3.0, 6.0, 9.0, 12.0, 30.0, 120.01])
@@ -129,8 +121,13 @@ class mass_to_lum(object):
         Qi = PiecewisePowerlaw(mass_range, powers, coeff,
                                norm=False, externalval=None)
         
-        return agemax_MS, LFUV, LH2, Qi
+        return tMS, LFUV, LH2, Qi
         
+    def calc_LFUV_SB99(self, mass, age=0.0):
+        return mass*self.LtoM_FUV_SB99(age)
+
+    def calc_Qi_SB99(self, mass, age=0.0):
+        return mass*self.QtoM_EUV_SB99(age)
         
     def _get_MtoL_SB99(self):
         # SB99 specific FUV luminosity Psi = L/M_* as a function of age
