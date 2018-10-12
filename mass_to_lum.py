@@ -17,10 +17,9 @@ class mass_to_lum(object):
         ----------
         model: string
            Name of stellar evolutionary track.
-           'Padova': Power-law approximation for stellar properties
-                     using Padova track (Bruzual & Charlot 2003).
-                     Data from Table 1 in Parravano et al. (2003).
-                     This option should be used for individual stars.
+           'Padova': Power-law approximation to stellar luminosity, MS lifetime
+                     based on Padova evolutionary track (Bruzual & Charlot 2003).
+                     Data taken from Table 1 in Parravano et al. (2003).
         """
         
         self.model = model
@@ -97,7 +96,6 @@ class mass_to_lum(object):
                 y[x >= 12.0] += 2.3
                 return y
             return wrapper
-
         tMS = decorator(pp)
         
         # FUV luminosity
